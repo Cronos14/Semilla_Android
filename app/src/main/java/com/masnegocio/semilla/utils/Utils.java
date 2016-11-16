@@ -1,6 +1,6 @@
 package com.masnegocio.semilla.utils;
 
-import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 /**
@@ -51,6 +52,8 @@ import java.util.regex.Pattern;
  */
 
 public class Utils {
+
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
     public static View generateForm(Context context, Pantalla pantalla) {
 
@@ -104,7 +107,6 @@ public class Utils {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     public static View generateForm(Context context, Form form) {
 
         //linearLayout.removeViewsInLayout(NUMBER_VIEWS_STATIC,linearLayout.getChildCount()-NUMBER_VIEWS_STATIC);
@@ -279,7 +281,7 @@ public class Utils {
 
 
                             RadioButton rbOption = new RadioButton(context);
-                            rbOption.setId(View.generateViewId());
+                            rbOption.setId(generateViewId());
                             rbOption.setText(labelValue);
                             rbOption.setTextColor(Color.BLACK);
                             rbOption.setChecked(selectedValue);
@@ -332,7 +334,7 @@ public class Utils {
                                 checkBox.setChecked(selectedValue);
                             }
 
-                            checkBox.setId(View.generateViewId());
+                            checkBox.setId(generateViewId());
                             if(editable!=null && !editable){
                                 checkBox.setEnabled(false);
                             }
@@ -513,6 +515,28 @@ public class Utils {
 
         navigationView.setItemTextColor(navigationViewColorStateList);
         navigationView.setItemIconTintList(navigationViewColorStateList);
+    }
+
+
+
+    @SuppressLint("NewApi")
+    public static int generateViewId() {
+
+        if (Build.VERSION.SDK_INT < 17) {
+            for (;;) {
+                final int result = sNextGeneratedId.get();
+                // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+                int newValue = result + 1;
+                if (newValue > 0x00FFFFFF)
+                    newValue = 1; // Roll over to 1, not 0.
+                if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                    return result;
+                }
+            }
+        } else {
+            return View.generateViewId();
+        }
+
     }
 
 

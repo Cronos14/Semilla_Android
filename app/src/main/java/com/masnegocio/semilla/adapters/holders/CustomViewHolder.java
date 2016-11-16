@@ -1,8 +1,6 @@
 package com.masnegocio.semilla.adapters.holders;
 
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -18,6 +16,7 @@ import com.masnegocio.semilla.models.Action;
 import com.masnegocio.semilla.models.DataRow;
 import com.masnegocio.semilla.models.ObjectGeneral;
 import com.masnegocio.semilla.models.Row;
+import com.masnegocio.semilla.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +48,6 @@ public class CustomViewHolder extends ViewHolder{
         this.onClickItemIconListener = onClickItemIconListener;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void bind(Object obj) {
 
@@ -64,8 +62,10 @@ public class CustomViewHolder extends ViewHolder{
 
                 TextView textViewHeader = new TextView(itemView.getContext());
                 TextView textView = new TextView(itemView.getContext());
-                textViewHeader.setId(View.generateViewId());
-                textView.setId(View.generateViewId());
+
+
+                textViewHeader.setId(Utils.generateViewId());
+                textView.setId(Utils.generateViewId());
 
 
                 textViewHeader.setText(dataRow.getHeader().getAttributes().get("label").toString());
@@ -85,7 +85,7 @@ public class CustomViewHolder extends ViewHolder{
                 viewDraw.setHeader(dataRow.getHeader());
 
                 LinearLayout linearView = new LinearLayout(itemView.getContext());
-                linearView.setId(View.generateViewId());
+                linearView.setId(Utils.generateViewId());
                 linearView.setOrientation(LinearLayout.VERTICAL);
 
                 viewDraw.setLinearLayout(linearView);

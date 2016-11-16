@@ -2,7 +2,6 @@ package com.masnegocio.semilla;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -16,7 +15,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -36,6 +34,7 @@ import com.masnegocio.semilla.models.ViewGeneral;
 import com.masnegocio.semilla.tasks.Tarea;
 import com.masnegocio.semilla.tasks.TareaUI;
 import com.masnegocio.semilla.utils.Singleton;
+import com.masnegocio.semilla.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void generarTema() {
 
         if (tema instanceof Navigation) {
@@ -85,7 +83,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 LinearLayout linearHeader = new LinearLayout(this);
                 linearHeader.setOrientation(LinearLayout.VERTICAL);
                 linearHeader.setGravity(Gravity.BOTTOM);
-                linearHeader.setBackground(getResources().getDrawable(R.drawable.background_primary));
+                if (Build.VERSION.SDK_INT < 16) {
+                    linearHeader.setBackgroundDrawable(getResources().getDrawable(R.drawable.background_primary));
+                }else{
+                    linearHeader.setBackground(getResources().getDrawable(R.drawable.background_primary));
+                }
+
                 LinearLayout.LayoutParams paramsHeader = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.nav_header_height));
                 linearHeader.setLayoutParams(paramsHeader);
 
@@ -127,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 frameLayout = new FrameLayout(this);
                 FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                 frameLayout.setLayoutParams(frameParams);
-                frameLayout.setId(View.generateViewId());
+                frameLayout.setId(Utils.generateViewId());
 
                 LinearLayout linearLayout = new LinearLayout(this);
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -272,7 +275,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onResume() {
         super.onResume();
@@ -282,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TareaUI tareaUI = new TareaUI(this,"Generando UI");
             tareaUI.setOnPostExecuteListener(new Tarea.OnPostExecuteListener() {
 
-                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
                 @Override
                 public void onPostExecute(Object object) {
 
@@ -347,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TareaUI tareaUI = new TareaUI(this,"Generando UI");
             tareaUI.setOnPostExecuteListener(new Tarea.OnPostExecuteListener() {
 
-                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
                 @Override
                 public void onPostExecute(Object object) {
 
