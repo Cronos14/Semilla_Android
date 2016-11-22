@@ -42,6 +42,24 @@ public class ObjectGeneral implements Serializable {
             if(element!=null && (!(element instanceof JSONObject) && !(element instanceof JSONArray))){
                 addAttribute(name,jsonObject.opt(name));
             }
+            //Agrega de forma recursiva JSONObjects y JSONArrays
+            /*else if(element!=null && element instanceof JSONObject){
+                ObjectGeneral objectGeneralHijo = new ObjectGeneral();
+                objectGeneralHijo.addAttributesOfJson((JSONObject) element);
+                addAttribute(name,objectGeneralHijo);
+            }else if(element!=null && element instanceof JSONArray){
+
+                JSONArray elements = (JSONArray)element;
+                List<ObjectGeneral> objectsArray = new ArrayList<>();
+                for(int j = 0;j<elements.length();j++){
+                    JSONObject elementHijo = elements.optJSONObject(j);
+                    ObjectGeneral objectGeneral = new ObjectGeneral();
+                    objectGeneral.addAttributesOfJson(elementHijo);
+                    objectsArray.add(objectGeneral);
+                }
+                addAttribute(name,objectsArray);
+
+            }*/
 
         }
 
