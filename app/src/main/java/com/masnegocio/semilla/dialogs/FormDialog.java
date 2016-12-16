@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -88,9 +89,9 @@ public class FormDialog extends DialogFragment {
 
         View view = null;
         if(pantalla!=null){
-            view = Utils.generateForm(getActivity(), pantalla);
+            view = Utils.generateForm((AppCompatActivity) getActivity(), pantalla);
         }else if(form != null){
-            view = Utils.generateForm(getActivity(), form);
+            view = Utils.generateForm((AppCompatActivity) getActivity(), form);
         }
 
 

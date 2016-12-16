@@ -63,6 +63,7 @@ public class TareaCatalog extends TareaGeneral {
         return catalog;
     }
 
+
     private MenuGeneral getToolBarGeneral(JSONArray jsonArrayToolbar){
 
 
@@ -80,6 +81,7 @@ public class TareaCatalog extends TareaGeneral {
         return null;
 
     }
+
 
     private Table getTable(JSONObject jsonTable){
 
@@ -174,6 +176,5 @@ public class TareaCatalog extends TareaGeneral {
 
         return table;
     }
-
 
 }

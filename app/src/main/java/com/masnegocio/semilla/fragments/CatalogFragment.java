@@ -112,8 +112,10 @@ public class CatalogFragment extends Fragment implements CustomViewHolder.OnClic
             public void onClick(View view) {
                 Row dataSelected = data.get(recyclerView.getChildAdapterPosition(view));
 
-                for(Action action : dataSelected.getActions()){
-                    Log.e("CatalogFragment","actions: "+action.getAttributes().get("tooltip"));
+                if(dataSelected.getActions()!=null) {
+                    for (Action action : dataSelected.getActions()) {
+                        Log.e("CatalogFragment", "actions: " + action.getAttributes().get("tooltip"));
+                    }
                 }
 
             }
@@ -240,19 +242,21 @@ public class CatalogFragment extends Fragment implements CustomViewHolder.OnClic
             Log.e("CatalogFragment","Click Ordenar");
 
 
-            SingleChoiceDialog singleChoiceDialog = SingleChoiceDialog.newInstance("Ordenar por...",1,catalog.getTable().getHeaders());
-            singleChoiceDialog.setOnClickListener(new SingleChoiceDialog.OnClickListener() {
-                @Override
-                public void onClick(Object object) {
+            if(catalog!=null) {
+                SingleChoiceDialog singleChoiceDialog = SingleChoiceDialog.newInstance("Ordenar por...", 1, catalog.getTable().getHeaders());
+                singleChoiceDialog.setOnClickListener(new SingleChoiceDialog.OnClickListener() {
+                    @Override
+                    public void onClick(Object object) {
 
-                    Collections.sort(data, new Compare((String)object));
+                        Collections.sort(data, new Compare((String) object));
 
-                    adapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
 
-                }
-            });
+                    }
+                });
 
-            singleChoiceDialog.show(getFragmentManager(),"choice");
+                singleChoiceDialog.show(getFragmentManager(), "choice");
+            }
 
         }
 

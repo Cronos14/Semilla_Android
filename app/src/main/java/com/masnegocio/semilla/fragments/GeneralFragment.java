@@ -93,7 +93,7 @@ public class GeneralFragment extends Fragment {
                     @Override
                     public void onPostExecute(Object object) {
                         form = (Form)object;
-                        linearLayout.addView(Utils.generateForm(getActivity(), form));
+                        linearLayout.addView(Utils.generateForm((AppCompatActivity) getActivity(), form));
                     }
                 });
                 tareaForm.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -103,9 +103,9 @@ public class GeneralFragment extends Fragment {
 
 
         if(pantalla!=null){
-            linearLayout.addView(Utils.generateForm(getActivity(), pantalla));
+            linearLayout.addView(Utils.generateForm((AppCompatActivity) getActivity(), pantalla));
         }else if(form != null){
-            linearLayout.addView(Utils.generateForm(getActivity(), form));
+            linearLayout.addView(Utils.generateForm((AppCompatActivity) getActivity(), form));
         }
 
 

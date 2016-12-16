@@ -231,8 +231,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void replaceView(String title, Event event) {
 
-
-
         if(event!=null && event.getAttributes()!=null && event.getAttributes().get("url") != null) {
             String url = (String)event.getAttributes().get("url");
             if (url.contains("form")) {

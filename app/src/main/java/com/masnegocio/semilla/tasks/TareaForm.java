@@ -100,7 +100,7 @@ public class TareaForm extends TareaGeneral {
                 JSONObject jsonValue = jsonValues.optJSONObject(i);
 
                 ObjectGeneral objectGeneral = new ObjectGeneral();
-                objectGeneral.addAttributesOfJson(jsonValue);
+                objectGeneral.addAttributesOfJson(jsonValue,true);
                 values.add(objectGeneral);
             }
         }

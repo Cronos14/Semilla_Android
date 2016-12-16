@@ -12,6 +12,10 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.support.design.widget.NavigationView;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Base64;
@@ -31,11 +35,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.masnegocio.semilla.R;
+import com.masnegocio.semilla.adapters.CustomAdapter;
+import com.masnegocio.semilla.decorations.DividerItemDecoration;
+import com.masnegocio.semilla.models.Action;
 import com.masnegocio.semilla.models.Boton;
+import com.masnegocio.semilla.models.Catalog;
+import com.masnegocio.semilla.models.DataRow;
+import com.masnegocio.semilla.models.Event;
 import com.masnegocio.semilla.models.Form;
+import com.masnegocio.semilla.models.MenuGeneral;
 import com.masnegocio.semilla.models.ObjectGeneral;
 import com.masnegocio.semilla.models.Pantalla;
+import com.masnegocio.semilla.models.Row;
 import com.masnegocio.semilla.models.Section;
+import com.masnegocio.semilla.models.Table;
 import com.masnegocio.semilla.models.ViewCustom;
 import com.masnegocio.semilla.models.ViewGeneral;
 
@@ -44,6 +57,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -55,7 +69,7 @@ public class Utils {
 
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
 
-    public static View generateForm(Context context, Pantalla pantalla) {
+    public static View generateForm(AppCompatActivity context, Pantalla pantalla) {
 
         //linearLayout.removeViewsInLayout(NUMBER_VIEWS_STATIC,linearLayout.getChildCount()-NUMBER_VIEWS_STATIC);
         LinearLayout linearLayout = new LinearLayout(context);
@@ -107,7 +121,7 @@ public class Utils {
 
     }
 
-    public static View generateForm(Context context, Form form) {
+    public static View generateForm(AppCompatActivity context, Form form) {
 
         //linearLayout.removeViewsInLayout(NUMBER_VIEWS_STATIC,linearLayout.getChildCount()-NUMBER_VIEWS_STATIC);
 
@@ -353,7 +367,7 @@ public class Utils {
 
                     Spinner spinner = new Spinner(context);
 
-                    final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                    final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(
                             context,android.R.layout.simple_dropdown_item_1line);
                     spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
                     spinner.setAdapter(spinnerArrayAdapter);
@@ -382,9 +396,36 @@ public class Utils {
                             spinner.setEnabled(false);
                         }
                     }
-
-
                     linearLayoutSection.addView(spinner);
+                }else if(control.equalsIgnoreCase("catalog")){
+
+                    if(viewGeneral instanceof ViewCustom) {
+                        ViewCustom viewCustom = (ViewCustom) viewGeneral;
+                        for (ObjectGeneral value : viewCustom.getValues()) {
+                            ObjectGeneral catalogObjectGeneral = (ObjectGeneral) value.getAttributes().get("catalog");
+                            Catalog catalog = Utils.instanceCatalog(catalogObjectGeneral);
+
+                            ArrayList<Row> data = new ArrayList<>();
+                            ArrayList<Row> dataAux = new ArrayList<>();
+                            CustomAdapter<Row> adapter = new CustomAdapter<>(data);
+
+                            data.addAll(catalog.getTable().getRows());
+                            dataAux.addAll(catalog.getTable().getRows());
+
+                            RecyclerView recyclerView = new RecyclerView(context);
+                            recyclerView.setHasFixedSize(true);
+                            recyclerView.setAdapter(adapter);
+
+                            recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+                            recyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST));
+                            recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+                            adapter.notifyDataSetChanged();
+
+                            linearLayoutSection.addView(recyclerView);
+
+                        }
+                    }
                 }
 
             }
@@ -555,4 +596,153 @@ public class Utils {
 
             }
      */
+
+
+    private static Catalog instanceCatalog(ObjectGeneral objectGeneralCatalog){
+
+        Catalog catalog = new Catalog();
+
+        catalog.addAttributesOfObjectGeneral(objectGeneralCatalog);
+
+        catalog.setToolbar(getToolBarGeneral((List)objectGeneralCatalog.getAttributes().get("toolbar")));
+        catalog.setTable(getTable((ObjectGeneral)objectGeneralCatalog.getAttributes().get("table")));
+        catalog.setRootEvent(getEvent((ObjectGeneral) objectGeneralCatalog.getAttributes().get("root_event")));
+
+        return catalog;
+    }
+
+    private static MenuGeneral getToolBarGeneral(List<ObjectGeneral> listObjetoGeneralToolbar){
+
+
+        for(int i = 0;i<listObjetoGeneralToolbar.size();i++){
+
+            ObjectGeneral objectGeneralToolbar = listObjetoGeneralToolbar.get(i);
+            MenuGeneral toolbarGeneral = new MenuGeneral();
+            toolbarGeneral.addAttributesOfObjectGeneral(objectGeneralToolbar);
+            toolbarGeneral.setEvent(getEvent((ObjectGeneral) objectGeneralToolbar.getAttributes().get("event")));
+
+
+            return toolbarGeneral;
+        }
+
+        return null;
+
+    }
+
+    private static Table getTable(ObjectGeneral objectGeneralTable){
+
+        Table table = new Table();
+
+        table.addAttributesOfObjectGeneral(objectGeneralTable);
+
+        List<ObjectGeneral> objectGeneralArray = (List)objectGeneralTable.getAttributes().get("headers");
+
+        ArrayList<ObjectGeneral> headers = new ArrayList<>();
+
+        for(int i = 0;i<objectGeneralArray.size();i++){
+            ObjectGeneral objectGeneralHeader = objectGeneralArray.get(i);
+
+            ObjectGeneral objectGeneral = new ObjectGeneral();
+            objectGeneral.addAttributesOfObjectGeneral(objectGeneralHeader);
+
+            //posicion del row hardcodeado descomentar relative layout en CustomViewHolder
+
+            /*if(i==1){
+                objectGeneral.addAttribute("toRightOf","i_cc_id");
+            }else if(i==2){
+                objectGeneral.addAttribute("toBelowOf","i_cc_id");
+            }else if(i==3){
+                objectGeneral.addAttribute("toRightOf","v_cc_centro_costos");
+                objectGeneral.addAttribute("toBelowOf","v_cc_responsable");
+            }else if(i==4){
+                objectGeneral.addAttribute("toBelowOf","v_cc_responsable");
+            }*/
+
+            headers.add(objectGeneral);
+        }
+
+        table.setHeaders(headers);
+
+        List<ObjectGeneral> objectGeneralArrayData = (List)objectGeneralTable.getAttributes().get("data");
+
+        ArrayList<Row> rows = new ArrayList<>();
+        for(int i = 0;i<objectGeneralArrayData.size();i++){
+            ObjectGeneral objectGeneralData = objectGeneralArrayData.get(i);
+
+
+            Row row = new Row();
+
+            //agrega cada campo con su respectivo header
+            ArrayList<DataRow> fields = new ArrayList<>();
+            for(int j = 0;j<table.getHeaders().size();j++){
+                ObjectGeneral header = table.getHeaders().get(j);
+                Object data = objectGeneralData.getAttributes().get(header.getAttributes().get("field").toString());
+                DataRow dataRow = new DataRow();
+                dataRow.setHeader(header);
+                dataRow.setData(data);
+                fields.add(dataRow);
+            }
+
+            row.setFields(fields);
+
+
+            List<ObjectGeneral> objectGeneralArrayActions = (List)objectGeneralData.getAttributes().get("actions");
+            if(objectGeneralArrayActions!=null) {
+                ArrayList<Action> actions = new ArrayList<>();
+                for (int j = 0; j < objectGeneralArrayActions.size(); j++) {
+                    ObjectGeneral objectGeneralAction = objectGeneralArrayActions.get(j);
+
+                    if(objectGeneralAction!=null) {
+                        Action action = new Action();
+                        action.addAttributesOfObjectGeneral(objectGeneralAction);
+                        action.setEvent(getEvent((ObjectGeneral) objectGeneralAction.getAttributes().get("event")));
+                        actions.add(action);
+                    }
+                }
+                row.setActions(actions);
+            }
+
+            rows.add(row);
+
+
+            /*
+            LinkedHashMap<String,Object> fields = new LinkedHashMap<>();
+            for(Header header : table.getHeaders()){
+                String key = header.getLabel();
+                Object value = jsonData.opt(header.getField());
+                fields.put(key,value);
+            }*/
+
+        }
+
+        table.setRows(rows);
+
+        return table;
+    }
+
+    private static Event getEvent(ObjectGeneral objectGeneral){
+        if (objectGeneral != null) {
+            Event event = new Event();
+
+            event.addAttributesOfObjectGeneral(objectGeneral);
+
+            ObjectGeneral headersObjetoGeneral = (ObjectGeneral)objectGeneral.getAttributes().get("headers");
+            if(headersObjetoGeneral!=null){
+                ObjectGeneral headers = new ObjectGeneral();
+                headers.addAttributesOfObjectGeneral(headersObjetoGeneral);
+                event.setHeaders(headers);
+            }
+
+            ObjectGeneral parametersObjectoGeneral = (ObjectGeneral)objectGeneral.getAttributes().get("parameters");
+            if(parametersObjectoGeneral!=null){
+                ObjectGeneral parameters = new ObjectGeneral();
+                parameters.addAttributesOfObjectGeneral(parametersObjectoGeneral);
+                event.setParameters(parameters);
+            }
+
+            return event;
+        }
+
+        return null;
+    }
 }
